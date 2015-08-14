@@ -2,7 +2,7 @@ drupal-cat
 ==========
 
 A drupal module that is the all about the cats
-![](http://www.hdwallpapersinn.com/wp-content/uploads/2014/08/cute-cat-wallpapers.jpg)
+![](http://www.hdwallpapersinn.com/wp-content/uploads/2014/08/cute-cat-wallpapers.jpg?)
 
 ## Instructions
 
