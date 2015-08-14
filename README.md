@@ -16,5 +16,5 @@ A drupal module that is the all about the cats
 
 ## Submission
 - Fork this repo
-- Create a pr when finished.
+- Create a Pull Request when finished.
 - Send us an email with the link to the site!
