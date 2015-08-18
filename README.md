@@ -12,7 +12,7 @@ A drupal module that is the all about the cats
    You can use this url to get cat images
    http://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=cat&rsz=8&safe=active
 4. Display a random cat image on every article, but not on pages.
-5. Create an admin settings page in the to allow images of cats to be replaced images of whatever animal the user wants. This should only be accessible by admins.
+5. Create an admin settings page to allow images of cats to be replaced images of whatever animal the user wants. This should only be accessible by admins.
 
 ## Submission
 - Fork this repo
