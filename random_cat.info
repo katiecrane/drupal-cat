@@ -1,0 +1,5 @@
+name = random_cat
+description = displays a random cat image on every article, but not on pages
+core = 7.x
+; NEW LINE
+configure = admin/config/content/random_cat
