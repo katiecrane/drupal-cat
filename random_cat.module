@@ -1,0 +1,134 @@
+<?php
+/**
+ * @file
+ * A module that displays a random image of a cat on every article
+ */
+
+/**
+ * Implements hook_help()
+ *
+ * Displays help and module information.
+ *
+ * @param path
+ * 	Which path of the site is being used to display help
+ * @param arg
+ * 	Array that holds the current path as returned from arg() function
+ */
+function random_cat_help($path, $arg) {
+	switch ($path) {
+		case "admin/help#random_cat":
+			return '<p>' . t("Displays a random image of a cat") . '</p>';
+			break;
+	}
+}
+
+/**
+ * Implements hook_block_info()
+ */
+function random_cat_block_info() {
+	$blocks['random_cat'] = array(
+		//name to appear in block list
+		'info' => t('Random cat'),
+		//default settings
+		'cache' => DRUPAL_CACHE_PER_ROLE,
+		);
+	return $blocks;
+}
+
+/**
+ * Implements hook_get_cat()
+ *
+ * returns the url of a randomly selected cat
+ */
+function random_cat_get_cat() {
+	//search for the indicated animal
+	$animal = variable_get('animal_type','cat');
+	$url = "http://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=" . $animal . "&rsz=8&safe=active";
+
+	//send request
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_REFERER, 'http://dev-katies-internship-submission.pantheon.io/');
+	$body = curl_exec($ch);
+	curl_close($ch);
+
+	//process the JSON string
+	$json = json_decode($body,true);
+	
+	//google can only return 8 results, so we need to choose a random number between 0 and 7 
+	//(since results are 0 indexed)
+	$random = rand(0,7);
+	$url = $json['responseData']['results'][$random]['unescapedUrl'];
+	return $url;
+
+	//to use:
+	//$test_url = random_cat_get_cat();
+	//return '<img src=' . $test_url .'>';
+}
+
+/**
+ * Implements hook_block_view()
+ *
+ * displays the retrieved cat image on page
+ */
+function random_cat_block_view($delta = '') {
+	switch ($delta) {
+		case 'random_cat':
+			$animal = variable_get('animal_type','cat');
+			$block['subject'] = t('Random ' . $animal);
+			if (user_access('access content')) {
+				//retrieve data
+				$result = random_cat_get_cat();
+			}
+			if (empty($result)) {
+				$block['content'] = t('No cats available.');
+			}
+			else {
+				$block['content'] = "<img src='" . $result . "' alt='cat image' width='300px'>";
+			}
+			
+		return $block;
+	}
+}
+
+/**
+ * Implements hook_menu()
+ */
+function random_cat_menu() {
+	$items = array();
+
+	$items['admin/config/content/random_cat'] = array(
+		'title' => 'Random cat',
+		'description' => 'Configuration for Random cat module',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('random_cat_form'),
+		'access arguments' => array('access administration pages'),
+		'type' => MENU_NORMAL_ITEM,
+	);
+
+	return $items;
+}
+
+/**
+ * Page callback: Random cat settings
+ *
+ * @see random_cat_menu
+ */
+function random_cat_form($form, &$form_state) {
+	$form['animal_type'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Animal to display'),
+		'#default_value' => variable_get('animal_type', 'cat'),
+		//hippopotamus is pretty long and is only 12 characters, so 20 should be sufficient
+		'#size' => 20,
+		'#maclength' => 20,
+		'#description' => t('The animal to display'),
+		'#required' => TRUE,
+	);
+
+	return system_settings_form($form);
+}
+
+
+
